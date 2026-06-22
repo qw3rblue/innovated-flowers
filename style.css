@@ -1,0 +1,2088 @@
+*,
+*::after,
+*::before {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --dark-color: #05020d;
+  --twilight-a: #05020d;
+  --twilight-b: #10163a;
+  --twilight-c: #032f32;
+  --moon: #fff5ce;
+  --cyan-glow: #67fff0;
+  --rose-glow: #ff77c8;
+  --gold-glow: #ffe66d;
+}
+
+body {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--dark-color);
+  overflow: hidden;
+  perspective: 1000px;
+  isolation: isolate;
+  --pointer-x: 50%;
+  --pointer-y: 50%;
+}
+
+.intro-screen {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 52%, rgba(103, 255, 240, 0.08), transparent 18vmin),
+    #000;
+  color: #fff;
+  z-index: 999;
+  transition: opacity 1.4s ease, visibility 1.4s ease;
+}
+
+.intro-countdown {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 26vmin;
+  height: 26vmin;
+  border-radius: 50%;
+  filter: drop-shadow(0 0 4vmin rgba(103, 255, 240, 0.24));
+}
+
+.countdown-number {
+  position: relative;
+  z-index: 2;
+  font: 300 11vmin/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: rgba(255, 255, 255, 0.94);
+  text-shadow:
+    0 0 2vmin rgba(103, 255, 240, 0.72),
+    0 0 7vmin rgba(255, 119, 200, 0.34);
+}
+
+.countdown-ring,
+.countdown-ring::before,
+.countdown-ring::after {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+
+.countdown-ring {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    inset 0 0 3vmin rgba(103, 255, 240, 0.12),
+    0 0 6vmin rgba(103, 255, 240, 0.12);
+}
+
+.countdown-ring::before {
+  content: "";
+  background: conic-gradient(from -90deg, rgba(103, 255, 240, 0.95), rgba(255, 119, 200, 0.82), rgba(255, 230, 109, 0.9), rgba(103, 255, 240, 0.95));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 0.9vmin), #000 calc(100% - 0.8vmin));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 0.9vmin), #000 calc(100% - 0.8vmin));
+  animation: countdown-sweep 10s linear forwards;
+}
+
+.countdown-ring::after {
+  content: "";
+  inset: -2vmin;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  animation: countdown-pulse 1s ease-in-out infinite;
+}
+
+.intro-revealing .intro-screen,
+.intro-complete .intro-screen {
+  opacity: 0;
+  visibility: hidden;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 32vmin;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to top, rgba(2, 15, 10, 0.96), rgba(3, 18, 15, 0.74) 45%, transparent),
+    radial-gradient(ellipse at 20% 100%, rgba(54, 180, 110, 0.28), transparent 44%),
+    radial-gradient(ellipse at 80% 100%, rgba(48, 160, 190, 0.18), transparent 45%);
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 1.8s ease 1s;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgba(123, 255, 231, 0.16), transparent 18vmin),
+    radial-gradient(circle at 50% 86%, rgba(255, 119, 200, 0.11), transparent 42vmin),
+    radial-gradient(circle at 20% 20%, rgba(115, 155, 255, 0.12), transparent 34vmin);
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 1.4s ease;
+  z-index: 5;
+}
+
+body.is-loaded::before {
+  opacity: 1;
+}
+
+.night {
+  position: fixed;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  filter: blur(0.1vmin);
+  background-image:
+    radial-gradient(ellipse at 50% 8%, rgba(73, 100, 190, 0.45), transparent 36%),
+    radial-gradient(ellipse at bottom, rgba(18, 86, 87, 0.32), transparent 48%),
+    linear-gradient(180deg, var(--twilight-a) 0%, var(--twilight-b) 52%, var(--twilight-c) 100%);
+  opacity: 1;
+  transition: opacity 1.8s ease, filter 2s ease;
+}
+
+.sky,
+.stars,
+.petal-field,
+.sparkle-field,
+.mist {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sky {
+  z-index: 1;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 1.6s ease 0.35s, transform 2s ease 0.35s, filter 2s ease 0.35s;
+}
+
+.moon {
+  position: absolute;
+  right: 10vw;
+  top: 8vh;
+  width: 13vmin;
+  height: 13vmin;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 30%, #fffdf0 0 18%, transparent 19%),
+    radial-gradient(circle at 68% 62%, rgba(214, 188, 132, 0.28) 0 11%, transparent 12%),
+    radial-gradient(circle, var(--moon), #e7cf92 68%, rgba(255, 245, 206, 0) 72%);
+  box-shadow:
+    0 0 5vmin rgba(255, 246, 206, 0.65),
+    0 0 18vmin rgba(128, 220, 255, 0.28);
+  animation: moon-breathe 8s ease-in-out infinite;
+}
+
+.moon span {
+  position: absolute;
+  inset: 13%;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.aurora {
+  position: absolute;
+  left: 50%;
+  top: 4vh;
+  width: 90vw;
+  height: 42vh;
+  border-radius: 50%;
+  filter: blur(5vmin);
+  opacity: 0.34;
+  transform-origin: center;
+  mix-blend-mode: screen;
+}
+
+.aurora--1 {
+  background: conic-gradient(from 90deg, transparent, rgba(103, 255, 240, 0.5), transparent, rgba(255, 119, 200, 0.34), transparent);
+  animation: aurora-ribbon-1 16s ease-in-out infinite;
+}
+
+.aurora--2 {
+  top: 13vh;
+  width: 74vw;
+  height: 34vh;
+  background: conic-gradient(from 200deg, transparent, rgba(255, 230, 109, 0.3), transparent, rgba(143, 119, 255, 0.4), transparent);
+  animation: aurora-ribbon-2 19s ease-in-out infinite;
+}
+
+.aurora--3 {
+  top: -8vh;
+  width: 66vw;
+  height: 36vh;
+  background: radial-gradient(ellipse, rgba(109, 255, 184, 0.34), transparent 68%);
+  animation: aurora-ribbon-3 23s ease-in-out infinite;
+}
+
+.stars {
+  z-index: 2;
+}
+
+.star {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, var(--a));
+  box-shadow: 0 0 1.4vmin rgba(142, 244, 255, var(--glow-a));
+  animation: star-twinkle var(--d) ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+
+.petal-field {
+  z-index: 9;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 1.8s ease 4.6s;
+}
+
+.petal-drift {
+  position: absolute;
+  left: var(--x);
+  top: -12vmin;
+  width: var(--w);
+  height: var(--hgt);
+  border-radius: 90% 0 90% 0;
+  background:
+    radial-gradient(circle at 32% 25%, rgba(255, 255, 255, 0.65), transparent 24%),
+    linear-gradient(135deg, hsla(var(--h), 92%, 82%, 0.84), hsla(var(--h), 88%, 56%, 0.52));
+  filter: drop-shadow(0 0 1.2vmin hsla(var(--h), 95%, 70%, 0.28));
+  transform: rotate(var(--r));
+  animation: petal-fall var(--d) linear infinite;
+  animation-delay: var(--delay);
+}
+
+.sparkle-field {
+  z-index: 12;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 1.8s ease 3.2s;
+}
+
+.sparkle {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: #fffbd1;
+  box-shadow:
+    0 0 var(--glow-a) rgba(255, 255, 210, 0.82),
+    0 0 var(--glow-b) rgba(103, 255, 240, 0.38);
+  animation: sparkle-rise var(--d) ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+
+.sparkle::before,
+.sparkle::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 280%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+  transform: translate(-50%, -50%);
+}
+
+.sparkle::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.mist {
+  left: -15vw;
+  top: auto;
+  bottom: -4vmin;
+  width: 130vw;
+  height: 34vmin;
+  z-index: 4;
+  opacity: 0.48;
+  filter: blur(2.4vmin);
+  background:
+    radial-gradient(ellipse at 20% 70%, rgba(126, 255, 220, 0.18), transparent 35%),
+    radial-gradient(ellipse at 55% 60%, rgba(255, 145, 205, 0.11), transparent 42%),
+    radial-gradient(ellipse at 88% 65%, rgba(255, 230, 109, 0.11), transparent 34%);
+  animation: mist-slide 20s ease-in-out infinite;
+  transition: opacity 1.8s ease 2.1s;
+}
+
+.mist--2 {
+  bottom: 8vmin;
+  opacity: 0.23;
+  transform: scaleX(-1);
+  animation-duration: 27s;
+  animation-delay: -9s;
+}
+
+.background-flowers {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 1;
+  transition: opacity 1.7s ease 2.4s, transform 2.2s ease 2.4s, filter 2.2s ease 2.4s;
+}
+
+.distant-flower {
+  --bg-petal: rgba(145, 255, 228, 0.55);
+  --bg-center: rgba(255, 234, 112, 0.72);
+  --df-scale: 1;
+  --df-rotate: 0deg;
+  position: absolute;
+  bottom: 20vmin;
+  width: 2.2vmin;
+  height: 2.2vmin;
+  border-radius: 50%;
+  background: var(--bg-center);
+  box-shadow: 0 0 2vmin rgba(95, 240, 220, 0.25);
+  transform-origin: 50% 26vmin;
+  animation: distant-flower-sway 7s ease-in-out infinite;
+}
+
+.distant-flower::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 0.35vmin;
+  height: 22vmin;
+  transform: translateX(-50%);
+  background-image: linear-gradient(to bottom, rgba(92, 205, 160, 0.7), transparent);
+}
+
+.intro-running {
+  background: #000;
+}
+
+.intro-running::before,
+.intro-running::after {
+  opacity: 0;
+}
+
+.intro-running .night,
+.intro-running .sky,
+.intro-running .background-flowers,
+.intro-running .flowers,
+.intro-running .petal-field,
+.intro-running .sparkle-field,
+.intro-running .mist {
+  opacity: 0;
+}
+
+.intro-running .sky {
+  transform: translateY(2vmin) scale(1.04);
+  filter: blur(1.2vmin);
+}
+
+.intro-running .background-flowers {
+  transform: translateY(7vmin);
+  filter: blur(1.4vmin);
+}
+
+.intro-running .flowers {
+  filter: blur(1.8vmin) saturate(0.65);
+}
+
+.intro-revealing .night,
+.intro-revealing .sky,
+.intro-revealing .background-flowers,
+.intro-revealing .flowers,
+.intro-revealing .petal-field,
+.intro-revealing .sparkle-field,
+.intro-revealing .mist {
+  opacity: 1;
+}
+
+.intro-revealing .sky,
+.intro-revealing .background-flowers {
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+.intro-revealing .flower--1 {
+  animation:
+    hero-flower-enter 1.6s 6.2s cubic-bezier(0.16, 1, 0.3, 1) backwards,
+    moving-flower-1 4s 7.7s linear infinite;
+}
+
+.intro-revealing .main-highlight {
+  animation: main-highlight-burst 2.4s 6.85s ease-out both;
+}
+
+.distant-flower span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3.6vmin;
+  height: 1.9vmin;
+  border-radius: 100% 0 100% 0;
+  background-image: linear-gradient(to right, transparent 10%, var(--bg-petal));
+  transform-origin: 0 50%;
+}
+
+.distant-flower span:nth-child(1) {
+  transform: rotate(0deg);
+}
+
+.distant-flower span:nth-child(2) {
+  transform: rotate(72deg);
+}
+
+.distant-flower span:nth-child(3) {
+  transform: rotate(144deg);
+}
+
+.distant-flower span:nth-child(4) {
+  transform: rotate(216deg);
+}
+
+.distant-flower span:nth-child(5) {
+  transform: rotate(288deg);
+}
+
+.distant-flower--1 {
+  left: 9vw;
+  bottom: 27vmin;
+  --df-scale: 0.78;
+  --df-rotate: -8deg;
+}
+
+.distant-flower--2 {
+  --bg-petal: rgba(255, 140, 196, 0.5);
+  left: 21vw;
+  bottom: 18vmin;
+  --df-scale: 0.56;
+  --df-rotate: 12deg;
+  animation-delay: -2s;
+}
+
+.distant-flower--3 {
+  --bg-petal: rgba(255, 214, 95, 0.5);
+  left: 72vw;
+  bottom: 25vmin;
+  --df-scale: 0.72;
+  --df-rotate: 18deg;
+  animation-delay: -4s;
+}
+
+.distant-flower--4 {
+  --bg-petal: rgba(177, 154, 255, 0.48);
+  left: 86vw;
+  bottom: 16vmin;
+  --df-scale: 0.52;
+  --df-rotate: -16deg;
+  animation-delay: -1.3s;
+}
+
+.distant-flower--5 {
+  --bg-petal: rgba(113, 230, 255, 0.42);
+  left: 39vw;
+  bottom: 23vmin;
+  --df-scale: 0.48;
+  --df-rotate: 5deg;
+  filter: blur(0.08vmin);
+  animation-delay: -3.1s;
+}
+
+.distant-flower--6 {
+  --bg-petal: rgba(255, 183, 120, 0.48);
+  left: 58vw;
+  bottom: 14vmin;
+  --df-scale: 0.62;
+  --df-rotate: -12deg;
+  filter: blur(0.1vmin);
+  animation-delay: -5s;
+}
+
+.flowers {
+  position: relative;
+  --garden-scale: 0.9;
+  --garden-enter-scale: 0.78;
+  transform: scale(var(--garden-scale));
+  z-index: 3;
+  filter: saturate(1.18) contrast(1.05);
+  animation: garden-enter 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  opacity: 1;
+  transition: opacity 1.5s ease 3s, filter 1.8s ease 3s;
+}
+
+.main-highlight {
+  position: absolute;
+  left: 0;
+  bottom: 80vmin;
+  width: 34vmin;
+  height: 34vmin;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 9;
+  transform: translate(-50%, 50%) scale(0.18);
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.86) 0 2.2vmin, rgba(255, 230, 109, 0.44) 2.5vmin 7vmin, rgba(103, 255, 240, 0.22) 7vmin 12vmin, transparent 13vmin),
+    conic-gradient(from 90deg, transparent, rgba(103, 255, 240, 0.45), transparent, rgba(255, 119, 200, 0.46), transparent, rgba(255, 230, 109, 0.42), transparent);
+  filter: blur(0.15vmin) drop-shadow(0 0 7vmin rgba(103, 255, 240, 0.55));
+}
+
+.flower {
+  position: absolute;
+  bottom: 10vmin;
+  transform-origin: bottom center;
+  z-index: 10;
+  --fl-speed: 0.8s;
+  --petal-dark: #54b8aa;
+  --petal-mid: #39c6d6;
+  --petal-light: #a7ffee;
+  --center: #fff8d8;
+  --glow: #6bf0ff;
+  --stem-dark: #14757a;
+  --stem-light: #39c6d6;
+  --leaf-glow: rgba(20, 117, 122, 0.4);
+  filter:
+    drop-shadow(0 0 1.2vmin rgba(103, 255, 240, 0.25))
+    drop-shadow(0 1.2vmin 1.8vmin rgba(0, 0, 0, 0.38));
+}
+.flower--1 {
+  animation: moving-flower-1 4s linear infinite;
+}
+.flower--1 .flower__line {
+  height: 70vmin;
+  animation-delay: 0.3s;
+}
+.flower--1 .flower__line__leaf--1 {
+  animation: blooming-leaf-right var(--fl-speed) 1.6s backwards;
+}
+.flower--1 .flower__line__leaf--2 {
+  animation: blooming-leaf-right var(--fl-speed) 1.4s backwards;
+}
+.flower--1 .flower__line__leaf--3 {
+  animation: blooming-leaf-left var(--fl-speed) 1.2s backwards;
+}
+.flower--1 .flower__line__leaf--4 {
+  animation: blooming-leaf-left var(--fl-speed) 1s backwards;
+}
+.flower--1 .flower__line__leaf--5 {
+  animation: blooming-leaf-right var(--fl-speed) 1.8s backwards;
+}
+.flower--1 .flower__line__leaf--6 {
+  animation: blooming-leaf-left var(--fl-speed) 2s backwards;
+}
+.flower--2 {
+  left: 50%;
+  transform: rotate(20deg);
+  animation: moving-flower-2 4s linear infinite;
+}
+.flower--2 .flower__line {
+  height: 60vmin;
+  animation-delay: 0.6s;
+}
+.flower--2 .flower__line__leaf--1 {
+  animation: blooming-leaf-right var(--fl-speed) 1.9s backwards;
+}
+.flower--2 .flower__line__leaf--2 {
+  animation: blooming-leaf-right var(--fl-speed) 1.7s backwards;
+}
+.flower--2 .flower__line__leaf--3 {
+  animation: blooming-leaf-left var(--fl-speed) 1.5s backwards;
+}
+.flower--2 .flower__line__leaf--4 {
+  animation: blooming-leaf-left var(--fl-speed) 1.3s backwards;
+}
+.flower--3 {
+  left: 50%;
+  transform: rotate(-15deg);
+  animation: moving-flower-3 4s linear infinite;
+}
+.flower--3 .flower__line {
+  animation-delay: 0.9s;
+}
+.flower--3 .flower__line__leaf--1 {
+  animation: blooming-leaf-right var(--fl-speed) 2.5s backwards;
+}
+.flower--3 .flower__line__leaf--2 {
+  animation: blooming-leaf-right var(--fl-speed) 2.3s backwards;
+}
+.flower--3 .flower__line__leaf--3 {
+  animation: blooming-leaf-left var(--fl-speed) 2.1s backwards;
+}
+.flower--3 .flower__line__leaf--4 {
+  animation: blooming-leaf-left var(--fl-speed) 1.9s backwards;
+}
+.flower--4 {
+  left: -36vmin;
+  bottom: 7vmin;
+  transform: rotate(-28deg) scale(0.78);
+  z-index: 8;
+  animation: moving-flower-4 5s linear infinite;
+}
+.flower--4 .flower__line {
+  height: 47vmin;
+  animation-delay: 1s;
+}
+.flower--4 .flower__line__leaf--1,
+.flower--4 .flower__line__leaf--2,
+.flower--4 .flower__line__leaf--5 {
+  animation: blooming-leaf-right var(--fl-speed) 2.1s backwards;
+}
+.flower--4 .flower__line__leaf--3,
+.flower--4 .flower__line__leaf--4,
+.flower--4 .flower__line__leaf--6 {
+  animation: blooming-leaf-left var(--fl-speed) 2.3s backwards;
+}
+.flower--5 {
+  left: 28vmin;
+  bottom: 8vmin;
+  transform: rotate(31deg) scale(0.68);
+  z-index: 7;
+  animation: moving-flower-5 4.8s linear infinite;
+}
+.flower--5 .flower__line {
+  height: 43vmin;
+  animation-delay: 1.15s;
+}
+.flower--5 .flower__line__leaf--1,
+.flower--5 .flower__line__leaf--2,
+.flower--5 .flower__line__leaf--5 {
+  animation: blooming-leaf-right var(--fl-speed) 2.4s backwards;
+}
+.flower--5 .flower__line__leaf--3,
+.flower--5 .flower__line__leaf--4,
+.flower--5 .flower__line__leaf--6 {
+  animation: blooming-leaf-left var(--fl-speed) 2.15s backwards;
+}
+.flower--6 {
+  left: -12vmin;
+  bottom: 2vmin;
+  transform: rotate(8deg) scale(0.56);
+  z-index: 11;
+  animation: moving-flower-6 3.8s linear infinite;
+}
+.flower--6 .flower__line {
+  height: 36vmin;
+  width: 1.1vmin;
+  animation-delay: 1.25s;
+}
+.flower--6 .flower__line__leaf {
+  --w: 5vmin;
+}
+.flower--6 .flower__line__leaf--1,
+.flower--6 .flower__line__leaf--2,
+.flower--6 .flower__line__leaf--5 {
+  animation: blooming-leaf-right var(--fl-speed) 1.85s backwards;
+}
+.flower--6 .flower__line__leaf--3,
+.flower--6 .flower__line__leaf--4,
+.flower--6 .flower__line__leaf--6 {
+  animation: blooming-leaf-left var(--fl-speed) 2s backwards;
+}
+.flower--pink {
+  --petal-dark: #c93283;
+  --petal-mid: #ff70b7;
+  --petal-light: #ffd1ec;
+  --center: #ffe77a;
+  --glow: #ff9bd6;
+  --stem-dark: #236b57;
+  --stem-light: #4fd099;
+  --leaf-glow: rgba(79, 208, 153, 0.35);
+}
+
+.flower--pink,
+.flower--violet,
+.flower--gold {
+  filter:
+    drop-shadow(0 0 1.7vmin color-mix(in srgb, var(--glow), transparent 42%))
+    drop-shadow(0 1.2vmin 1.8vmin rgba(0, 0, 0, 0.42));
+}
+
+.flower--violet {
+  --petal-dark: #6450d8;
+  --petal-mid: #9a83ff;
+  --petal-light: #d8d0ff;
+  --center: #caff7a;
+  --glow: #bfa7ff;
+  --stem-dark: #1d646d;
+  --stem-light: #62c9b8;
+  --leaf-glow: rgba(98, 201, 184, 0.34);
+}
+.flower--gold {
+  --petal-dark: #c97912;
+  --petal-mid: #ffba3a;
+  --petal-light: #fff1a8;
+  --center: #8cffdc;
+  --glow: #ffe66d;
+  --stem-dark: #356b31;
+  --stem-light: #8dcf4e;
+  --leaf-glow: rgba(141, 207, 78, 0.34);
+}
+.flower__leafs {
+  position: relative;
+  animation: blooming-flower 2s backwards;
+}
+.flower__leafs--1 {
+  animation-delay: 1.1s;
+}
+.flower__leafs--2 {
+  animation-delay: 1.4s;
+}
+.flower__leafs--3 {
+  animation-delay: 1.7s;
+}
+.flower__leafs--4 {
+  animation-delay: 1.95s;
+}
+.flower__leafs--5 {
+  animation-delay: 2.2s;
+}
+.flower__leafs--6 {
+  animation-delay: 2.45s;
+}
+.flower__leafs::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -100%);
+  width: 8vmin;
+  height: 8vmin;
+  background-color: var(--glow);
+  filter: blur(8vmin);
+  opacity: 0.82;
+  animation: bloom-aura 3.4s ease-in-out infinite;
+}
+.flower__leaf {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 8vmin;
+  height: 11vmin;
+  border-radius: 51% 49% 47% 53%/44% 45% 55% 69%;
+  background-color: var(--petal-light);
+  background-image: linear-gradient(to top, var(--petal-dark), var(--petal-light));
+  transform-origin: bottom center;
+  opacity: 0.9;
+  box-shadow:
+    inset 0 0 2vmin rgba(255, 255, 255, 0.48),
+    inset 0 -1.5vmin 2.4vmin rgba(0, 0, 0, 0.14),
+    0 0 1.6vmin color-mix(in srgb, var(--glow), transparent 68%);
+  transition: filter 0.4s ease;
+}
+
+.flower__leaf::after {
+  content: "";
+  position: absolute;
+  inset: 12% 20% auto auto;
+  width: 38%;
+  height: 52%;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.54), transparent 70%);
+  opacity: 0.45;
+  transform: rotate(12deg);
+}
+.flower__leaf--1 {
+  transform: translate(-10%, 1%) rotateY(40deg) rotateX(-50deg);
+}
+.flower__leaf--2 {
+  transform: translate(-50%, -4%) rotateX(40deg);
+}
+.flower__leaf--3 {
+  transform: translate(-90%, 0%) rotateY(45deg) rotateX(50deg);
+}
+.flower__leaf--4 {
+  width: 8vmin;
+  height: 8vmin;
+  transform-origin: bottom left;
+  border-radius: 4vmin 10vmin 4vmin 4vmin;
+  transform: translate(0%, 18%) rotateX(70deg) rotate(-43deg);
+  background-image: linear-gradient(to top, var(--petal-mid), var(--petal-light));
+  z-index: 1;
+  opacity: 0.8;
+}
+.flower__leaf--5 {
+  width: 7.4vmin;
+  height: 10vmin;
+  transform: translate(-50%, -7%) rotateZ(45deg) rotateX(32deg);
+  opacity: 0.82;
+}
+.flower__leaf--6 {
+  width: 7.4vmin;
+  height: 10vmin;
+  transform: translate(-50%, -7%) rotateZ(-45deg) rotateX(32deg);
+  opacity: 0.82;
+}
+.flower__leafs--star .flower__leaf {
+  border-radius: 48% 52% 42% 58% / 25% 35% 65% 75%;
+}
+.flower__leafs--round .flower__leaf {
+  width: 9vmin;
+  height: 10vmin;
+  border-radius: 58% 42% 52% 48% / 54% 55% 45% 46%;
+}
+.flower__leafs--wide .flower__leaf {
+  width: 10vmin;
+  height: 8vmin;
+  border-radius: 70% 30% 62% 38% / 48% 45% 55% 52%;
+}
+.flower__white-circle {
+  position: absolute;
+  left: -3.5vmin;
+  top: -3vmin;
+  width: 9vmin;
+  height: 4vmin;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.85), transparent 17%),
+    radial-gradient(circle, var(--center) 0 45%, color-mix(in srgb, var(--center), #ff8a00 28%) 74%, rgba(255, 255, 255, 0.35));
+  box-shadow:
+    inset 0 0 1.5vmin rgba(255, 255, 255, 0.75),
+    0 0 2.6vmin color-mix(in srgb, var(--center), transparent 35%);
+  animation: center-pulse 2.8s ease-in-out infinite;
+}
+.flower__white-circle::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  height: 60%;
+  border-radius: inherit;
+  background-image: repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px), repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px), repeating-linear-gradient(67.5deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px), repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px), repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px), repeating-linear-gradient(112.5deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px), repeating-linear-gradient(112.5deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px), repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px), repeating-linear-gradient(22.5deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px), repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px), repeating-linear-gradient(22.5deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px), repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px), repeating-linear-gradient(157.5deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px), repeating-linear-gradient(67.5deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px), repeating-linear-gradient(67.5deg, rgba(0, 0, 0, 0.03) 0px, rgba(0, 0, 0, 0.03) 1px, transparent 1px, transparent 12px), linear-gradient(90deg, rgb(255, 235, 18), rgb(255, 206, 0));
+}
+.flower__line {
+  height: 55vmin;
+  width: 1.5vmin;
+  background-image: linear-gradient(to left, rgba(0, 0, 0, 0.2), transparent, rgba(255, 255, 255, 0.2)), linear-gradient(to top, transparent 10%, var(--stem-dark), var(--stem-light));
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
+  animation: grow-flower-tree 4s backwards;
+  border-radius: 100vmax;
+}
+.flower__line__leaf {
+  --w: 7vmin;
+  --h: calc(var(--w) + 2vmin);
+  position: absolute;
+  top: 20%;
+  left: 90%;
+  width: var(--w);
+  height: var(--h);
+  border-top-right-radius: var(--h);
+  border-bottom-left-radius: var(--h);
+  background-image:
+    radial-gradient(circle at 78% 22%, rgba(255, 255, 255, 0.2), transparent 20%),
+    linear-gradient(to top, var(--leaf-glow), var(--stem-light));
+  box-shadow: 0 0 0.9vmin color-mix(in srgb, var(--stem-light), transparent 72%);
+}
+.flower__line__leaf--1 {
+  transform: rotate(70deg) rotateY(30deg);
+}
+.flower__line__leaf--2 {
+  top: 45%;
+  transform: rotate(70deg) rotateY(30deg);
+}
+.flower__line__leaf--3, .flower__line__leaf--4, .flower__line__leaf--6 {
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: var(--h);
+  border-bottom-right-radius: var(--h);
+  left: -460%;
+  top: 12%;
+  transform: rotate(-70deg) rotateY(30deg);
+}
+.flower__line__leaf--4 {
+  top: 40%;
+}
+.flower__line__leaf--5 {
+  top: 0;
+  transform-origin: left;
+  transform: rotate(70deg) rotateY(30deg) scale(0.6);
+}
+.flower__line__leaf--6 {
+  top: -2%;
+  left: -450%;
+  transform-origin: right;
+  transform: rotate(-70deg) rotateY(30deg) scale(0.6);
+}
+.flower__light {
+  position: absolute;
+  bottom: 0vmin;
+  width: 1vmin;
+  height: 1vmin;
+  background-color: rgb(255, 251, 0);
+  border-radius: 50%;
+  filter: blur(0.12vmin);
+  box-shadow: 0 0 1.6vmin currentColor;
+  animation: light-ans 4.8s linear infinite backwards;
+}
+.flower__light:nth-child(odd) {
+  background-color: #23f0ff;
+}
+.flower__light--1 {
+  left: -2vmin;
+  animation-delay: 1s;
+}
+.flower__light--2 {
+  left: 3vmin;
+  animation-delay: 0.5s;
+}
+.flower__light--3 {
+  left: -6vmin;
+  animation-delay: 0.3s;
+}
+.flower__light--4 {
+  left: 6vmin;
+  animation-delay: 0.9s;
+}
+.flower__light--5 {
+  left: -1vmin;
+  animation-delay: 1.5s;
+}
+.flower__light--6 {
+  left: -4vmin;
+  animation-delay: 3s;
+}
+.flower__light--7 {
+  left: 3vmin;
+  animation-delay: 2s;
+}
+.flower__light--8 {
+  left: -6vmin;
+  animation-delay: 3.5s;
+}
+.flower__grass {
+  --c: #159faa;
+  --line-w: 1.5vmin;
+  position: absolute;
+  bottom: 12vmin;
+  left: -7vmin;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  z-index: 20;
+  transform-origin: bottom center;
+  transform: rotate(-48deg) rotateY(40deg);
+}
+.flower__grass--1 {
+  animation: moving-grass 2s linear infinite;
+}
+.flower__grass--2 {
+  left: 2vmin;
+  bottom: 10vmin;
+  transform: scale(0.5) rotate(75deg) rotateX(10deg) rotateY(-200deg);
+  opacity: 0.8;
+  z-index: 0;
+  animation: moving-grass--2 1.5s linear infinite;
+}
+.flower__grass--top {
+  width: 7vmin;
+  height: 10vmin;
+  border-top-right-radius: 100%;
+  border-right: var(--line-w) solid var(--c);
+  transform-origin: bottom center;
+  transform: rotate(-2deg);
+}
+.flower__grass--bottom {
+  margin-top: -2px;
+  width: var(--line-w);
+  height: 25vmin;
+  background-image: linear-gradient(to top, transparent, var(--c));
+}
+.flower__grass__leaf {
+  --size: 10vmin;
+  --leaf-width: 21vmin;
+  position: absolute;
+  width: var(--leaf-width);
+  height: var(--size);
+  border-top-left-radius: var(--size);
+  border-top-right-radius: var(--size);
+  background-image: linear-gradient(to top, transparent, transparent 30%, var(--c));
+  z-index: 100;
+}
+.flower__grass__leaf--1 {
+  top: -6%;
+  left: 30%;
+  --size: 6vmin;
+  --leaf-width: 12.6vmin;
+  transform: rotate(-20deg);
+  animation: growing-grass-ans--1 2s 2.6s backwards;
+}
+@keyframes growing-grass-ans--1 {
+  0% {
+    transform-origin: bottom left;
+    transform: rotate(-20deg) scale(0);
+  }
+}
+.flower__grass__leaf--2 {
+  top: -5%;
+  left: -110%;
+  --size: 6vmin;
+  --leaf-width: 12.6vmin;
+  transform: rotate(10deg);
+  animation: growing-grass-ans--2 2s 2.4s linear backwards;
+}
+@keyframes growing-grass-ans--2 {
+  0% {
+    transform-origin: bottom right;
+    transform: rotate(10deg) scale(0);
+  }
+}
+.flower__grass__leaf--3 {
+  top: 5%;
+  left: 60%;
+  --size: 8vmin;
+  --leaf-width: 16.8vmin;
+  transform: rotate(-18deg) rotateX(-20deg);
+  animation: growing-grass-ans--3 2s 2.2s linear backwards;
+}
+@keyframes growing-grass-ans--3 {
+  0% {
+    transform-origin: bottom left;
+    transform: rotate(-18deg) rotateX(-20deg) scale(0);
+  }
+}
+.flower__grass__leaf--4 {
+  top: 6%;
+  left: -135%;
+  --size: 8vmin;
+  --leaf-width: 16.8vmin;
+  transform: rotate(2deg);
+  animation: growing-grass-ans--4 2s 2s linear backwards;
+}
+@keyframes growing-grass-ans--4 {
+  0% {
+    transform-origin: bottom right;
+    transform: rotate(2deg) scale(0);
+  }
+}
+.flower__grass__leaf--5 {
+  top: 20%;
+  left: 60%;
+  --size: 10vmin;
+  --leaf-width: 21vmin;
+  transform: rotate(-24deg) rotateX(-20deg);
+  animation: growing-grass-ans--5 2s 1.8s linear backwards;
+}
+@keyframes growing-grass-ans--5 {
+  0% {
+    transform-origin: bottom left;
+    transform: rotate(-24deg) rotateX(-20deg) scale(0);
+  }
+}
+.flower__grass__leaf--6 {
+  top: 22%;
+  left: -180%;
+  --size: 10vmin;
+  --leaf-width: 21vmin;
+  transform: rotate(10deg);
+  animation: growing-grass-ans--6 2s 1.6s linear backwards;
+}
+@keyframes growing-grass-ans--6 {
+  0% {
+    transform-origin: bottom right;
+    transform: rotate(10deg) scale(0);
+  }
+}
+.flower__grass__leaf--7 {
+  top: 39%;
+  left: 70%;
+  --size: 10vmin;
+  --leaf-width: 21vmin;
+  transform: rotate(-10deg);
+  animation: growing-grass-ans--7 2s 1.4s linear backwards;
+}
+@keyframes growing-grass-ans--7 {
+  0% {
+    transform-origin: bottom left;
+    transform: rotate(-10deg) scale(0);
+  }
+}
+.flower__grass__leaf--8 {
+  top: 40%;
+  left: -215%;
+  --size: 11vmin;
+  --leaf-width: 23.1vmin;
+  transform: rotate(10deg);
+  animation: growing-grass-ans--8 2s 1.2s linear backwards;
+}
+@keyframes growing-grass-ans--8 {
+  0% {
+    transform-origin: bottom right;
+    transform: rotate(10deg) scale(0);
+  }
+}
+.flower__grass__overlay {
+  position: absolute;
+  top: -10%;
+  right: 0%;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  filter: blur(1.5vmin);
+  z-index: 100;
+}
+.meadow-grass {
+  position: absolute;
+  bottom: -8vmin;
+  left: -54vmin;
+  width: 108vmin;
+  height: 28vmin;
+  z-index: 120;
+  pointer-events: none;
+}
+.meadow-grass span {
+  --blade-height: 23vmin;
+  --blade-width: 1.3vmin;
+  --blade-color: #168f66;
+  position: absolute;
+  bottom: 0;
+  left: var(--blade-left);
+  width: var(--blade-width);
+  height: var(--blade-height);
+  border-radius: 100% 0 100% 0;
+  background-image: linear-gradient(to top, rgba(2, 20, 12, 0), var(--blade-color));
+  transform-origin: bottom center;
+  transform: rotate(var(--blade-rotate));
+  filter: drop-shadow(0 0 0.6vmin rgba(63, 235, 160, 0.12));
+  animation: meadow-blade-sway var(--blade-speed) ease-in-out infinite;
+  animation-delay: var(--blade-delay);
+}
+.meadow-grass span:nth-child(1) {
+  --blade-left: 0%;
+  --blade-height: 19vmin;
+  --blade-rotate: -18deg;
+  --blade-speed: 3.8s;
+  --blade-delay: -0.4s;
+}
+.meadow-grass span:nth-child(2) {
+  --blade-left: 8.5%;
+  --blade-height: 25vmin;
+  --blade-rotate: -7deg;
+  --blade-speed: 4.5s;
+  --blade-delay: -2.1s;
+}
+.meadow-grass span:nth-child(3) {
+  --blade-left: 17%;
+  --blade-height: 17vmin;
+  --blade-rotate: 12deg;
+  --blade-speed: 3.2s;
+  --blade-delay: -1s;
+}
+.meadow-grass span:nth-child(4) {
+  --blade-left: 25.5%;
+  --blade-height: 29vmin;
+  --blade-rotate: 5deg;
+  --blade-speed: 4.8s;
+  --blade-delay: -2.8s;
+}
+.meadow-grass span:nth-child(5) {
+  --blade-left: 34%;
+  --blade-height: 21vmin;
+  --blade-rotate: -13deg;
+  --blade-speed: 3.6s;
+  --blade-delay: -1.7s;
+}
+.meadow-grass span:nth-child(6) {
+  --blade-left: 42.5%;
+  --blade-height: 31vmin;
+  --blade-rotate: 16deg;
+  --blade-speed: 5.2s;
+  --blade-delay: -3.5s;
+}
+.meadow-grass span:nth-child(7) {
+  --blade-left: 51%;
+  --blade-height: 20vmin;
+  --blade-rotate: -22deg;
+  --blade-speed: 4.2s;
+  --blade-delay: -0.8s;
+}
+.meadow-grass span:nth-child(8) {
+  --blade-left: 59.5%;
+  --blade-height: 26vmin;
+  --blade-rotate: 8deg;
+  --blade-speed: 3.4s;
+  --blade-delay: -2.4s;
+}
+.meadow-grass span:nth-child(9) {
+  --blade-left: 68%;
+  --blade-height: 18vmin;
+  --blade-rotate: 20deg;
+  --blade-speed: 4.9s;
+  --blade-delay: -1.2s;
+}
+.meadow-grass span:nth-child(10) {
+  --blade-left: 76.5%;
+  --blade-height: 28vmin;
+  --blade-rotate: -9deg;
+  --blade-speed: 4s;
+  --blade-delay: -3.1s;
+}
+.meadow-grass span:nth-child(11) {
+  --blade-left: 85%;
+  --blade-height: 22vmin;
+  --blade-rotate: 14deg;
+  --blade-speed: 3.7s;
+  --blade-delay: -2s;
+}
+.meadow-grass span:nth-child(12) {
+  --blade-left: 93.5%;
+  --blade-height: 30vmin;
+  --blade-rotate: -16deg;
+  --blade-speed: 5s;
+  --blade-delay: -4s;
+}
+.meadow-grass--2 {
+  left: -38vmin;
+  bottom: -12vmin;
+  transform: scale(0.78) rotateX(52deg);
+  opacity: 0.72;
+  z-index: 35;
+}
+.meadow-grass--2 span {
+  --blade-color: #1bc2a1;
+  filter: blur(0.04vmin);
+}
+.meadow-grass--3 {
+  left: -66vmin;
+  bottom: -16vmin;
+  transform: scale(1.15);
+  opacity: 0.5;
+  z-index: 140;
+}
+.meadow-grass--3 span {
+  --blade-color: #72c950;
+  --blade-width: 1vmin;
+  filter: blur(0.12vmin);
+}
+.flower__g-long {
+  --w: 2vmin;
+  --h: 6vmin;
+  --c: #159faa;
+  position: absolute;
+  bottom: 10vmin;
+  left: -3vmin;
+  transform-origin: bottom center;
+  transform: rotate(-30deg) rotateY(-20deg);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  animation: flower-g-long-ans 3s linear infinite;
+}
+@keyframes flower-g-long-ans {
+  0%, 100% {
+    transform: rotate(-30deg) rotateY(-20deg);
+  }
+  50% {
+    transform: rotate(-32deg) rotateY(-20deg);
+  }
+}
+.flower__g-long__top {
+  top: -6vmin;
+  width: calc(var(--w) + 1vmin);
+  height: var(--h);
+  border-top-right-radius: 100%;
+  border-right: 0.7vmin solid var(--c);
+  transform: translate(-0.7vmin, 1vmin);
+}
+.flower__g-long__bottom {
+  width: var(--w);
+  height: 50vmin;
+  transform-origin: bottom center;
+  background-image: linear-gradient(to top, transparent 30%, var(--c));
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
+  clip-path: polygon(35% 0, 65% 1%, 100% 100%, 0% 100%);
+}
+.flower__g-right {
+  position: absolute;
+  bottom: 6vmin;
+  left: -2vmin;
+  transform-origin: bottom left;
+  transform: rotate(20deg);
+}
+.flower__g-right .leaf {
+  width: 30vmin;
+  height: 50vmin;
+  border-top-left-radius: 100%;
+  border-left: 2vmin solid #079097;
+  background-image: linear-gradient(to bottom, transparent, var(--dark-color) 60%);
+  -webkit-mask-image: linear-gradient(to top, transparent 30%, #079097 60%);
+}
+.flower__g-right--1 {
+  animation: flower-g-right-ans 2.5s linear infinite;
+}
+.flower__g-right--2 {
+  left: 5vmin;
+  transform: rotateY(-180deg);
+  animation: flower-g-right-ans--2 3s linear infinite;
+}
+.flower__g-right--2 .leaf {
+  height: 75vmin;
+  filter: blur(0.3vmin);
+  opacity: 0.8;
+}
+@keyframes flower-g-right-ans {
+  0%, 100% {
+    transform: rotate(20deg);
+  }
+  50% {
+    transform: rotate(24deg) rotateX(-20deg);
+  }
+}
+@keyframes flower-g-right-ans--2 {
+  0%, 100% {
+    transform: rotateY(-180deg) rotate(0deg) rotateX(-20deg);
+  }
+  50% {
+    transform: rotateY(-180deg) rotate(6deg) rotateX(-20deg);
+  }
+}
+.flower__g-front {
+  position: absolute;
+  bottom: 6vmin;
+  left: 2.5vmin;
+  z-index: 100;
+  transform-origin: bottom center;
+  transform: rotate(-28deg) rotateY(30deg) scale(1.04);
+  animation: flower__g-front-ans 2s linear infinite;
+}
+@keyframes flower__g-front-ans {
+  0%, 100% {
+    transform: rotate(-28deg) rotateY(30deg) scale(1.04);
+  }
+  50% {
+    transform: rotate(-35deg) rotateY(40deg) scale(1.04);
+  }
+}
+.flower__g-front__line {
+  width: 0.3vmin;
+  height: 20vmin;
+  background-image: linear-gradient(to top, transparent, #079097, transparent 100%);
+  position: relative;
+}
+.flower__g-front__leaf-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: bottom left;
+  transform: rotate(10deg);
+}
+.flower__g-front__leaf-wrapper:nth-child(even) {
+  left: 0vmin;
+  transform: rotateY(-180deg) rotate(5deg);
+  animation: flower__g-front__leaf-left-ans 1s ease-in backwards;
+}
+.flower__g-front__leaf-wrapper:nth-child(odd) {
+  animation: flower__g-front__leaf-ans 1s ease-in backwards;
+}
+.flower__g-front__leaf-wrapper--1 {
+  top: -8vmin;
+  transform: scale(0.7);
+  animation: flower__g-front__leaf-ans 1s 5.5s ease-in backwards !important;
+}
+.flower__g-front__leaf-wrapper--2 {
+  top: -8vmin;
+  transform: rotateY(-180deg) scale(0.7) !important;
+  animation: flower__g-front__leaf-left-ans-2 1s 4.6s ease-in backwards !important;
+}
+.flower__g-front__leaf-wrapper--3 {
+  top: -3vmin;
+  animation: flower__g-front__leaf-ans 1s 4.6s ease-in backwards;
+}
+.flower__g-front__leaf-wrapper--4 {
+  top: -3vmin;
+  transform: rotateY(-180deg) scale(0.9) !important;
+  animation: flower__g-front__leaf-left-ans-2 1s 4.6s ease-in backwards !important;
+}
+@keyframes flower__g-front__leaf-left-ans-2 {
+  0% {
+    transform: rotateY(-180deg) scale(0);
+  }
+}
+.flower__g-front__leaf-wrapper--5, .flower__g-front__leaf-wrapper--6 {
+  top: 2vmin;
+}
+.flower__g-front__leaf-wrapper--7, .flower__g-front__leaf-wrapper--8 {
+  top: 6.5vmin;
+}
+.flower__g-front__leaf-wrapper--2 {
+  animation-delay: 5.2s !important;
+}
+.flower__g-front__leaf-wrapper--3 {
+  animation-delay: 4.9s !important;
+}
+.flower__g-front__leaf-wrapper--5 {
+  animation-delay: 4.3s !important;
+}
+.flower__g-front__leaf-wrapper--6 {
+  animation-delay: 4.1s !important;
+}
+.flower__g-front__leaf-wrapper--7 {
+  animation-delay: 3.8s !important;
+}
+.flower__g-front__leaf-wrapper--8 {
+  animation-delay: 3.5s !important;
+}
+@keyframes flower__g-front__leaf-ans {
+  0% {
+    transform: rotate(10deg) scale(0);
+  }
+}
+@keyframes flower__g-front__leaf-left-ans {
+  0% {
+    transform: rotateY(-180deg) rotate(5deg) scale(0);
+  }
+}
+.flower__g-front__leaf {
+  width: 10vmin;
+  height: 10vmin;
+  border-radius: 100% 0% 0% 100%/100% 100% 0% 0%;
+  box-shadow: inset 0 2px 1vmin hsla(184, 97%, 58%, 0.2);
+  background-image: linear-gradient(to bottom left, transparent, var(--dark-color)), linear-gradient(to bottom right, #159faa 50%, transparent 50%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom right, #159faa 50%, transparent 50%, transparent);
+  mask-image: linear-gradient(to bottom right, #159faa 50%, transparent 50%, transparent);
+}
+.flower__g-fr {
+  position: absolute;
+  bottom: -4vmin;
+  left: 0vmin;
+  transform-origin: bottom left;
+  z-index: 10;
+  animation: flower__g-fr-ans 2s linear infinite;
+}
+@keyframes flower__g-fr-ans {
+  0%, 100% {
+    transform: rotate(2deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+.flower__g-fr .leaf {
+  width: 30vmin;
+  height: 50vmin;
+  border-top-left-radius: 100%;
+  border-left: 2vmin solid #079097;
+  -webkit-mask-image: linear-gradient(to top, transparent 25%, #079097 50%);
+  position: relative;
+  z-index: 1;
+}
+.flower__g-fr__leaf {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 10vmin;
+  height: 10vmin;
+  border-radius: 100% 0% 0% 100%/100% 100% 0% 0%;
+  box-shadow: inset 0 2px 1vmin hsla(184, 97%, 58%, 0.2);
+  background-image: linear-gradient(to bottom left, transparent, var(--dark-color) 98%), linear-gradient(to bottom right, #23f0ff 45%, transparent 50%, transparent);
+  -webkit-mask-image: linear-gradient(135deg, #159faa 40%, transparent 50%, transparent);
+}
+.flower__g-fr__leaf--1 {
+  left: 20vmin;
+  transform: rotate(45deg);
+  animation: flower__g-fr-leaft-ans-1 0.5s 5.2s linear backwards;
+}
+@keyframes flower__g-fr-leaft-ans-1 {
+  0% {
+    transform-origin: left;
+    transform: rotate(45deg) scale(0);
+  }
+}
+.flower__g-fr__leaf--2 {
+  left: 12vmin;
+  top: -7vmin;
+  transform: rotate(25deg) rotateY(-180deg);
+  animation: flower__g-fr-leaft-ans-6 0.5s 5s linear backwards;
+}
+.flower__g-fr__leaf--3 {
+  left: 15vmin;
+  top: 6vmin;
+  transform: rotate(55deg);
+  animation: flower__g-fr-leaft-ans-5 0.5s 4.8s linear backwards;
+}
+.flower__g-fr__leaf--4 {
+  left: 6vmin;
+  top: -2vmin;
+  transform: rotate(25deg) rotateY(-180deg);
+  animation: flower__g-fr-leaft-ans-6 0.5s 4.6s linear backwards;
+}
+.flower__g-fr__leaf--5 {
+  left: 10vmin;
+  top: 14vmin;
+  transform: rotate(55deg);
+  animation: flower__g-fr-leaft-ans-5 0.5s 4.4s linear backwards;
+}
+@keyframes flower__g-fr-leaft-ans-5 {
+  0% {
+    transform-origin: left;
+    transform: rotate(55deg) scale(0);
+  }
+}
+.flower__g-fr__leaf--6 {
+  left: 0vmin;
+  top: 6vmin;
+  transform: rotate(25deg) rotateY(-180deg);
+  animation: flower__g-fr-leaft-ans-6 0.5s 4.2s linear backwards;
+}
+@keyframes flower__g-fr-leaft-ans-6 {
+  0% {
+    transform-origin: right;
+    transform: rotate(25deg) rotateY(-180deg) scale(0);
+  }
+}
+.flower__g-fr__leaf--7 {
+  left: 5vmin;
+  top: 22vmin;
+  transform: rotate(45deg);
+  animation: flower__g-fr-leaft-ans-7 0.5s 4s linear backwards;
+}
+@keyframes flower__g-fr-leaft-ans-7 {
+  0% {
+    transform-origin: left;
+    transform: rotate(45deg) scale(0);
+  }
+}
+.flower__g-fr__leaf--8 {
+  left: -4vmin;
+  top: 15vmin;
+  transform: rotate(15deg) rotateY(-180deg);
+  animation: flower__g-fr-leaft-ans-8 0.5s 3.8s linear backwards;
+}
+@keyframes flower__g-fr-leaft-ans-8 {
+  0% {
+    transform-origin: right;
+    transform: rotate(15deg) rotateY(-180deg) scale(0);
+  }
+}
+
+.long-g {
+  position: absolute;
+  bottom: 25vmin;
+  left: -42vmin;
+  transform-origin: bottom left;
+}
+.long-g--1 {
+  bottom: 0vmin;
+  transform: scale(0.8) rotate(-5deg);
+}
+.long-g--1 .leaf {
+  -webkit-mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
+}
+.long-g--1 .leaf--1 {
+  --w: 5vmin;
+  --h: 60vmin;
+  left: -2vmin;
+  transform: rotate(3deg) rotateY(-180deg);
+}
+.long-g--2, .long-g--3 {
+  bottom: -3vmin;
+  left: -35vmin;
+  transform-origin: center;
+  transform: scale(0.6) rotateX(60deg);
+}
+.long-g--2 .leaf, .long-g--3 .leaf {
+  -webkit-mask-image: linear-gradient(to top, transparent 50%, #079097 80%) !important;
+}
+.long-g--2 .leaf--1, .long-g--3 .leaf--1 {
+  left: -1vmin;
+  transform: rotateY(-180deg);
+}
+.long-g--3 {
+  left: -17vmin;
+  bottom: 0vmin;
+}
+.long-g--3 .leaf {
+  -webkit-mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
+}
+.long-g--4 {
+  left: 25vmin;
+  bottom: -3vmin;
+  transform-origin: center;
+  transform: scale(0.6) rotateX(60deg);
+}
+.long-g--4 .leaf {
+  -webkit-mask-image: linear-gradient(to top, transparent 50%, #079097 80%) !important;
+}
+.long-g--5 {
+  left: 42vmin;
+  bottom: 0vmin;
+  transform: scale(0.8) rotate(2deg);
+}
+.long-g--6 {
+  left: 0vmin;
+  bottom: -20vmin;
+  z-index: 100;
+  filter: blur(0.3vmin);
+  transform: scale(0.8) rotate(2deg);
+}
+.long-g--7 {
+  left: 35vmin;
+  bottom: 20vmin;
+  z-index: -1;
+  filter: blur(0.3vmin);
+  transform: scale(0.6) rotate(2deg);
+  opacity: 0.7;
+}
+.long-g .leaf {
+  --w: 15vmin;
+  --h: 40vmin;
+  --c: #1aaa15;
+  position: absolute;
+  bottom: 0;
+  width: var(--w);
+  height: var(--h);
+  border-top-left-radius: 100%;
+  border-left: 2vmin solid var(--c);
+  -webkit-mask-image: linear-gradient(to top, transparent 20%, var(--dark-color));
+  transform-origin: bottom center;
+}
+.long-g .leaf--0 {
+  left: 2vmin;
+  animation: leaf-ans-1 4s linear infinite;
+}
+.long-g .leaf--1 {
+  --w: 5vmin;
+  --h: 60vmin;
+  animation: leaf-ans-1 4s linear infinite;
+}
+.long-g .leaf--2 {
+  --w: 10vmin;
+  --h: 40vmin;
+  left: -0.5vmin;
+  bottom: 5vmin;
+  transform-origin: bottom left;
+  transform: rotateY(-180deg);
+  animation: leaf-ans-2 3s linear infinite;
+}
+.long-g .leaf--3 {
+  --w: 5vmin;
+  --h: 30vmin;
+  left: -1vmin;
+  bottom: 3.2vmin;
+  transform-origin: bottom left;
+  transform: rotate(-10deg) rotateY(-180deg);
+  animation: leaf-ans-3 3s linear infinite;
+}
+
+@keyframes leaf-ans-1 {
+  0%, 100% {
+    transform: rotate(-5deg) scale(1);
+  }
+  50% {
+    transform: rotate(5deg) scale(1.1);
+  }
+}
+@keyframes leaf-ans-2 {
+  0%, 100% {
+    transform: rotateY(-180deg) rotate(5deg);
+  }
+  50% {
+    transform: rotateY(-180deg) rotate(0deg) scale(1.1);
+  }
+}
+@keyframes leaf-ans-3 {
+  0%, 100% {
+    transform: rotate(-10deg) rotateY(-180deg);
+  }
+  50% {
+    transform: rotate(-20deg) rotateY(-180deg);
+  }
+}
+.grow-ans {
+  animation: grow-ans 2s var(--d) backwards;
+}
+
+@keyframes grow-ans {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+@keyframes light-ans {
+  0% {
+    opacity: 0;
+    transform: translateY(0vmin);
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(-5vmin) translateX(-2vmin);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-15vmin) translateX(2vmin);
+    filter: blur(0.2vmin);
+  }
+  75% {
+    transform: translateY(-20vmin) translateX(-2vmin);
+    filter: blur(0.2vmin);
+  }
+  100% {
+    transform: translateY(-30vmin);
+    opacity: 0;
+    filter: blur(1vmin);
+  }
+}
+@keyframes moving-flower-1 {
+  0%, 100% {
+    transform: rotate(2deg);
+  }
+  50% {
+    transform: rotate(-2deg);
+  }
+}
+@keyframes moving-flower-2 {
+  0%, 100% {
+    transform: rotate(18deg);
+  }
+  50% {
+    transform: rotate(14deg);
+  }
+}
+@keyframes moving-flower-3 {
+  0%, 100% {
+    transform: rotate(-18deg);
+  }
+  50% {
+    transform: rotate(-20deg) rotateY(-10deg);
+  }
+}
+@keyframes moving-flower-4 {
+  0%, 100% {
+    transform: rotate(-28deg) scale(0.78);
+  }
+  50% {
+    transform: rotate(-32deg) rotateY(12deg) scale(0.78);
+  }
+}
+@keyframes moving-flower-5 {
+  0%, 100% {
+    transform: rotate(31deg) scale(0.68);
+  }
+  50% {
+    transform: rotate(26deg) rotateX(-8deg) scale(0.68);
+  }
+}
+@keyframes moving-flower-6 {
+  0%, 100% {
+    transform: rotate(8deg) scale(0.56);
+  }
+  50% {
+    transform: rotate(13deg) rotateY(-12deg) scale(0.56);
+  }
+}
+@keyframes blooming-leaf-right {
+  0% {
+    transform-origin: left;
+    transform: rotate(70deg) rotateY(30deg) scale(0);
+  }
+}
+@keyframes blooming-leaf-left {
+  0% {
+    transform-origin: right;
+    transform: rotate(-70deg) rotateY(30deg) scale(0);
+  }
+}
+@keyframes grow-flower-tree {
+  0% {
+    height: 0;
+    border-radius: 1vmin;
+  }
+}
+@keyframes blooming-flower {
+  0% {
+    transform: scale(0);
+  }
+}
+@keyframes moving-grass {
+  0%, 100% {
+    transform: rotate(-48deg) rotateY(40deg);
+  }
+  50% {
+    transform: rotate(-50deg) rotateY(40deg);
+  }
+}
+@keyframes moving-grass--2 {
+  0%, 100% {
+    transform: scale(0.5) rotate(75deg) rotateX(10deg) rotateY(-200deg);
+  }
+  50% {
+    transform: scale(0.5) rotate(79deg) rotateX(10deg) rotateY(-200deg);
+  }
+}
+@keyframes distant-flower-sway {
+  0%, 100% {
+    transform: scale(var(--df-scale)) rotate(var(--df-rotate));
+  }
+  50% {
+    transform: scale(var(--df-scale)) rotate(calc(var(--df-rotate) + 5deg)) translateX(0.8vmin);
+  }
+}
+@keyframes meadow-blade-sway {
+  0%, 100% {
+    transform: rotate(var(--blade-rotate));
+  }
+  50% {
+    transform: rotate(calc(var(--blade-rotate) + 9deg)) scaleY(1.04);
+  }
+}
+@keyframes garden-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(8vmin) scale(var(--garden-enter-scale)) rotateX(18deg);
+    filter: blur(1.6vmin) saturate(0.8);
+  }
+  70% {
+    opacity: 1;
+    filter: blur(0) saturate(1.25);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(var(--garden-scale)) rotateX(0deg);
+    filter: blur(0) saturate(1.18) contrast(1.05);
+  }
+}
+@keyframes bloom-aura {
+  0%, 100% {
+    opacity: 0.62;
+    transform: translate(-50%, -100%) scale(0.88);
+  }
+  50% {
+    opacity: 0.95;
+    transform: translate(-50%, -100%) scale(1.16);
+  }
+}
+@keyframes center-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+@keyframes moon-breathe {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    filter: saturate(1);
+  }
+  50% {
+    transform: translateY(-0.8vmin) scale(1.035);
+    filter: saturate(1.18);
+  }
+}
+@keyframes aurora-ribbon-1 {
+  0%, 100% {
+    transform: translateX(-50%) rotate(-8deg) scaleX(1);
+  }
+  50% {
+    transform: translateX(-48%) rotate(7deg) scaleX(1.14);
+  }
+}
+@keyframes aurora-ribbon-2 {
+  0%, 100% {
+    transform: translateX(-48%) rotate(12deg) scaleX(0.96);
+  }
+  50% {
+    transform: translateX(-53%) rotate(-6deg) scaleX(1.12);
+  }
+}
+@keyframes aurora-ribbon-3 {
+  0%, 100% {
+    transform: translateX(-40%) rotate(-16deg) scale(1);
+  }
+  50% {
+    transform: translateX(-47%) rotate(10deg) scale(1.18);
+  }
+}
+@keyframes star-twinkle {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.65);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1.45);
+  }
+  60% {
+    opacity: 0.48;
+  }
+}
+@keyframes petal-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -12vmin, 0) rotate(var(--r));
+  }
+  10% {
+    opacity: 0.86;
+  }
+  55% {
+    transform: translate3d(9vw, 56vh, 0) rotate(calc(var(--r) + 170deg));
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(-7vw, 112vh, 0) rotate(calc(var(--r) + 360deg));
+  }
+}
+@keyframes sparkle-rise {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(3vmin) scale(0.35) rotate(0deg);
+  }
+  35% {
+    opacity: 0.92;
+  }
+  70% {
+    opacity: 0.42;
+    transform: translateY(-8vmin) scale(1) rotate(45deg);
+  }
+}
+@keyframes mist-slide {
+  0%, 100% {
+    transform: translateX(-3vw) scaleY(1);
+  }
+  50% {
+    transform: translateX(5vw) scaleY(1.14);
+  }
+}
+@keyframes countdown-sweep {
+  0% {
+    transform: rotate(0deg) scale(1);
+    opacity: 0.98;
+  }
+  100% {
+    transform: rotate(360deg) scale(1.04);
+    opacity: 0.2;
+  }
+}
+@keyframes countdown-pulse {
+  0%, 100% {
+    opacity: 0.28;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.72;
+    transform: scale(1.08);
+  }
+}
+@keyframes hero-flower-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(18vmin) scale(0.18) rotate(-14deg);
+    filter: blur(2vmin) brightness(1.8) saturate(1.6);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(-2vmin) scale(1.08) rotate(5deg);
+    filter: blur(0.15vmin) brightness(1.45) saturate(1.35);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(2deg);
+    filter: blur(0) brightness(1) saturate(1);
+  }
+}
+@keyframes main-highlight-burst {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 50%) scale(0.12) rotate(0deg);
+    filter: blur(1.2vmin) drop-shadow(0 0 2vmin rgba(103, 255, 240, 0));
+  }
+  30% {
+    opacity: 0.95;
+    transform: translate(-50%, 50%) scale(1.08) rotate(90deg);
+    filter: blur(0.1vmin) drop-shadow(0 0 8vmin rgba(103, 255, 240, 0.78));
+  }
+  70% {
+    opacity: 0.55;
+    transform: translate(-50%, 50%) scale(1.35) rotate(220deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, 50%) scale(1.62) rotate(360deg);
+    filter: blur(1vmin) drop-shadow(0 0 4vmin rgba(255, 119, 200, 0.15));
+  }
+}
+.growing-grass {
+  animation: growing-grass-ans 1s 2s backwards;
+}
+
+@keyframes growing-grass-ans {
+  0% {
+    transform: scale(0);
+  }
+}
+.not-loaded * {
+  animation-play-state: paused !important;
+}
+
+.not-loaded .intro-screen,
+.not-loaded .intro-screen * {
+  animation-play-state: running !important;
+}
+
+.not-loaded .grow-ans,
+.not-loaded .flower__leafs {
+  transform: scale(1) !important;
+  opacity: 1 !important;
+}
+
+.not-loaded .flower__line__leaf {
+  transform: rotate(70deg) rotateY(30deg) !important;
+  opacity: 1 !important;
+}
+
+.not-loaded .flowers,
+.not-loaded .background-flowers,
+.not-loaded .petal-field,
+.not-loaded .sparkle-field,
+.not-loaded .mist {
+  opacity: 0;
+}
+
+@media (max-width: 760px) {
+  .flowers {
+    --garden-scale: 0.72;
+    --garden-enter-scale: 0.62;
+  }
+
+  .moon {
+    right: 7vw;
+    top: 7vh;
+    width: 16vmin;
+    height: 16vmin;
+  }
+
+  .aurora {
+    width: 118vw;
+  }
+
+  .meadow-grass {
+    left: -58vmin;
+    width: 116vmin;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+
+  .countdown-ring::before {
+    animation-duration: 0.001ms !important;
+  }
+}
